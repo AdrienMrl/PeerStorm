@@ -47,12 +47,7 @@ mod tests {
 
         match parse_list(&mut context) {
             Ok(result) => {
-                expected_list
-                    .iter()
-                    .zip(result.iter())
-                    .for_each(|(expected, actual)| {
-                        assert_eq!(expected, actual);
-                    });
+                assert_eq!(result, expected_list);
             }
             Err(e) => {
                 panic!("Parsing failed with error: {}", e);
