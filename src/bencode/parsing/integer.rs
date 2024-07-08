@@ -2,11 +2,9 @@ use std::io::Read;
 
 use std::str::FromStr;
 
-use super::{BencodeError, BencodeErrorKind, BencodeValue, ParserContext};
+use super::{BencodeError, BencodeErrorKind, ParserContext};
 
-pub fn parse_integer<R: Read>(
-    context: &mut ParserContext<R>,
-) -> Result<BencodeValue, BencodeError> {
+pub fn parse_integer<R: Read>(context: &mut ParserContext<R>) -> Result<i64, BencodeError> {
     let start_position = context.position;
 
     let first_byte = context.read_byte()?;
@@ -38,7 +36,7 @@ pub fn parse_integer<R: Read>(
     let number = i64::from_str(string_number)
         .map_err(|e| BencodeError::new(BencodeErrorKind::InvalidInteger(e), start_position + 1))?;
 
-    Ok(BencodeValue::Integer(number))
+    Ok(number)
 }
 
 #[cfg(test)]
@@ -52,7 +50,7 @@ mod tests {
         let mut context: ParserContext<&mut std::io::Cursor<Vec<u8>>> =
             ParserContext::new(&mut cursor);
         let result = parse_integer(&mut context)?;
-        assert_eq!(result, BencodeValue::Integer(4251));
+        assert_eq!(result, 4251);
         Ok(())
     }
 }

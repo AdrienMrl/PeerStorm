@@ -16,6 +16,13 @@ impl<R: Read> ParserContext<R> {
         }
     }
 
+    pub fn try_peek_byte(&mut self) -> Option<u8> {
+        self.buffer
+            .fill_buf()
+            .ok()
+            .and_then(|buf| buf.first().copied())
+    }
+
     pub fn peek_byte(&mut self) -> Result<u8, BencodeError> {
         let buffer = self
             .buffer

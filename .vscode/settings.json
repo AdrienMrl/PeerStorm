@@ -1,0 +1,10 @@
+{
+    "rust-analyzer.runnableEnv": {
+        "RUST_BACKTRACE": "1"
+    },
+    "rust-analyzer.runnables.extraArgs": [
+        "--verbose"
+    ],
+    "rust-analyzer.cargo.runBuildScripts": true,
+    "rust-analyzer.checkOnSave.command": "clippy"
+}

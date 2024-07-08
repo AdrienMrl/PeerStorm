@@ -7,4 +7,5 @@ pub use errors::*;
 pub enum BencodeValue {
     Integer(i64),
     ByteString(Vec<u8>),
+    List(Vec<BencodeValue>),
 }

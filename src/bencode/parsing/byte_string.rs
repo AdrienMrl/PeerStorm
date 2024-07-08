@@ -1,15 +1,13 @@
-use std::io::{BufRead, Read};
+use std::io::Read;
 
-use crate::bencode::BencodeErrorKind;
+use super::{BencodeError, ParserContext};
 
-use super::{BencodeError, BencodeValue, ParserContext};
-
-pub fn parse_string<R: Read>(context: &mut ParserContext<R>) -> Result<BencodeValue, BencodeError> {
+pub fn parse_string<R: Read>(context: &mut ParserContext<R>) -> Result<Vec<u8>, BencodeError> {
     let mut size_part = context.read_until(b':')?;
     size_part.pop();
     let size = context.parse_usize(&size_part)?;
     let bytes_string = context.read_exact(size as usize)?;
-    Ok(BencodeValue::ByteString(bytes_string))
+    Ok(bytes_string)
 }
 
 #[cfg(test)]
@@ -28,7 +26,7 @@ mod tests {
 
         match parse_string(&mut context) {
             Ok(result) => {
-                assert_eq!(result, BencodeValue::ByteString(b"hello world !".to_vec()));
+                assert_eq!(result, b"hello world !");
             }
             Err(e) => {
                 panic!("Parsing failed with error: {}", e);
