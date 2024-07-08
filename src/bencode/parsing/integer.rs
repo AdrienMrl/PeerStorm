@@ -17,7 +17,6 @@ pub fn parse_integer<R: Read>(context: &mut ParserContext<R>) -> Result<i64, Ben
 
     let mut ascii_number = context.read_until(b'e')?;
 
-    // Check if we actually found an 'e'
     if ascii_number.last() != Some(&b'e') {
         return Err(BencodeError::new(
             BencodeErrorKind::UnexpectedEnd,
@@ -25,14 +24,11 @@ pub fn parse_integer<R: Read>(context: &mut ParserContext<R>) -> Result<i64, Ben
         ));
     }
 
-    // Remove the 'e' at the end
     ascii_number.pop();
 
-    // Convert to string
     let string_number = std::str::from_utf8(&ascii_number)
         .map_err(|e| BencodeError::new(BencodeErrorKind::InvalidUtf8(e), start_position + 1))?;
 
-    // Parse the integer
     let number = i64::from_str(string_number)
         .map_err(|e| BencodeError::new(BencodeErrorKind::InvalidInteger(e), start_position + 1))?;
 
