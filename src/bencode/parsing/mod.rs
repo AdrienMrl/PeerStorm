@@ -2,8 +2,6 @@ use std::io::Read;
 
 use parser_context::ParserContext;
 
-use std::str::FromStr;
-
 use super::{errors::*, BencodeValue};
 
 mod byte_string;
@@ -24,14 +22,7 @@ pub fn parse_bencode_to_end<R: Read>(
 ) -> Result<Vec<BencodeValue>, BencodeError> {
     let mut bencode_values = Vec::new();
     loop {
-        let peek = context.try_peek_byte();
-        if peek == end {
-            if consume_end && end.is_some() {
-                context.read_byte()?;
-            }
-            break;
-        }
-        match peek {
+        match context.try_peek_byte() {
             Some(b'i') => {
                 let integer = integer::parse_integer(context)?;
                 bencode_values.push(BencodeValue::Integer(integer));
@@ -44,9 +35,16 @@ pub fn parse_bencode_to_end<R: Read>(
                 let list = list::parse_list(context)?;
                 bencode_values.push(BencodeValue::List(list));
             }
-            _ => {
+            None => break,
+            other => {
+                if other == end {
+                    if consume_end {
+                        context.read_byte()?;
+                    }
+                    break;
+                }
                 return Err(BencodeError::new(
-                    BencodeErrorKind::UnexpectedToken(context.peek_byte()?),
+                    BencodeErrorKind::UnexpectedToken(other.unwrap()),
                     context.position,
                 ));
             }
