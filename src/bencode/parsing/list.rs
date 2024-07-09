@@ -5,13 +5,7 @@ use super::{BencodeError, BencodeErrorKind, BencodeValue, ParserContext};
 pub fn parse_list<R: Read>(
     context: &mut ParserContext<R>,
 ) -> Result<Vec<BencodeValue>, BencodeError> {
-    let first_byte = context.read_byte()?;
-    if first_byte != b'l' {
-        return Err(BencodeError::new(
-            BencodeErrorKind::UnexpectedToken(first_byte),
-            context.position,
-        ));
-    }
+    context.expect_and_consume_byte(b'l')?;
     let bencode_seq = super::parse_bencode_to_end(context, Some(b'e'), true)?;
     Ok(bencode_seq)
 }

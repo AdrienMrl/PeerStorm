@@ -30,7 +30,7 @@ impl fmt::Display for BencodeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{} at position {}",
+            "{}",
             match &self.kind {
                 BencodeErrorKind::IoError(e) => format!("I/O error: {}", e),
                 BencodeErrorKind::UnexpectedEnd => "Unexpected end of input".to_string(),
@@ -43,8 +43,7 @@ impl fmt::Display for BencodeError {
                     b, self.position
                 ),
                 BencodeErrorKind::IncompleteSequence => "Incomplete sequence".to_string(),
-            },
-            self.position
+            }
         )
     }
 }

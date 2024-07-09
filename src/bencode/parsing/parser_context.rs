@@ -41,6 +41,17 @@ impl<R: Read> ParserContext<R> {
         Ok(byte)
     }
 
+    pub fn expect_and_consume_byte(&mut self, expected: u8) -> Result<(), BencodeError> {
+        let byte = self.read_byte()?;
+        if byte != expected {
+            return Err(BencodeError::new(
+                BencodeErrorKind::UnexpectedToken(byte),
+                self.position - 1,
+            ));
+        }
+        Ok(())
+    }
+
     pub fn read_until(&mut self, byte: u8) -> Result<Vec<u8>, BencodeError> {
         let mut buf = Vec::new();
         let read = self.buffer.read_until(byte, &mut buf)?;
